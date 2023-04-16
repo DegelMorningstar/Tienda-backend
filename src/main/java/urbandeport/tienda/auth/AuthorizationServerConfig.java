@@ -40,7 +40,7 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     @Override
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
         clients.inMemory().withClient(JwtConfig.CLIENT_NAME)
-                .secret(bCryptPasswordEncoder .encode(JwtConfig.SECRET_KEY))
+                .secret(bCryptPasswordEncoder.encode(JwtConfig.SECRET_KEY))
                 .scopes("read","write")
                 .authorizedGrantTypes("password","refresh_token")
                 .accessTokenValiditySeconds(3600)

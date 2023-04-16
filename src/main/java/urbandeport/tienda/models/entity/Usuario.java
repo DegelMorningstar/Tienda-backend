@@ -1,6 +1,8 @@
 package urbandeport.tienda.models.entity;
 
 
+import lombok.*;
+
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
@@ -12,6 +14,11 @@ import java.util.List;
 
 @Entity
 @Table(name = "usuarios")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@ToString
 public class Usuario implements Serializable {
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
@@ -32,102 +39,33 @@ public class Usuario implements Serializable {
     private Boolean verificado;
     @Column(name="create_at")
     @Temporal(TemporalType.DATE)
-    @NotNull(message = "No puede estar vacio.")
     private Date createAt;
     @Column(name="update_at")
     @Temporal(TemporalType.DATE)
-    @NotNull(message = "No puede estar vacio.")
     private Date updateAt;
-
-    @ManyToMany(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
-    //@JoinTable(name = "user_authorities",joinColumns = @JoinColumn(name = "user_id"),inverseJoinColumns = @JoinColumn(name = "role_id"))
+    @PrePersist
+    private void prePersists (){
+        this.createAt = new Date();
+        this.updateAt = new Date();
+    }
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "usuarios_roles",
+            joinColumns = @JoinColumn(name = "usuario_id"),
+            inverseJoinColumns = @JoinColumn(name = "roles_id"),
+            uniqueConstraints= {@UniqueConstraint(columnNames= {"usuario_id", "roles_id"})})
     private List<Role> roles;
 
-    public Long getId() {
-        return id;
+    public void addRole(Role role){
+        this.roles.add(role);
+    }
+    public void removeRole(long roleId){
+        Role role = this.roles.stream().filter(t -> t.getId() == roleId).findFirst().orElse(null);
+        if (role != null) {
+            this.roles.remove(role);
+        }
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getNombre() {
-        return nombre;
-    }
-
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
-    }
-
-    public String getApellidos() {
-        return apellidos;
-    }
-
-    public void setApellidos(String apellidos) {
-        this.apellidos = apellidos;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public Date getCreateAt() {
-        return createAt;
-    }
-
-    public void setCreateAt(Date createAt) {
-        this.createAt = createAt;
-    }
-
-    public Date getUpdateAt() {
-        return updateAt;
-    }
-
-    public void setUpdateAt(Date updateAt) {
-        this.updateAt = updateAt;
-    }
-
-    public List<Role> getRoles() {
-        return roles;
-    }
-
-    public void setRoles(List<Role> roles) {
-        this.roles = roles;
-    }
-
-    public Boolean getVerificado() {
-        return verificado;
-    }
-
-    public void setVerificado(Boolean verificado) {
-        this.verificado = verificado;
-    }
-
-    @Override
-    public String toString() {
-        return "Usuario{" +
-                "id=" + id +
-                ", nombre='" + nombre + '\'' +
-                ", apellidos='" + apellidos + '\'' +
-                ", email='" + email + '\'' +
-                ", password='" + password + '\'' +
-                ", verificado=" + verificado +
-                ", createAt=" + createAt +
-                ", updateAt=" + updateAt +
-                '}';
-    }
 
     private static final long serialVersionUID = 1L;
 }

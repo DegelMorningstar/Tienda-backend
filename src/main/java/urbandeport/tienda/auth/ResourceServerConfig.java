@@ -27,6 +27,8 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
                 .antMatchers(HttpMethod.POST,"/api/clientes/upload").hasAnyRole("USER","ADMIN")
                 .antMatchers(HttpMethod.POST,"/api/clientes").hasRole("ADMIN")
                 .antMatchers("/api/clientes/**").hasRole("ADMIN")*/
+                .antMatchers(HttpMethod.GET,"/api/productos","/api/categorias").permitAll()
+                .antMatchers("/api/registro/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .cors().configurationSource(corsConfigurationSource());
@@ -38,7 +40,7 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
         config.setAllowedOrigins(Arrays.asList("http://localhost:4200"));
         config.setAllowedMethods(Arrays.asList("GET","POST","PUT","DELETE","OPTIONS"));
         config.setAllowCredentials(true);
-        config.setAllowedHeaders(Arrays.asList("Content-type","Authorization"));
+        config.setAllowedHeaders(Arrays.asList("Content-Type", "Authorization"));
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**",config);
         return source;
